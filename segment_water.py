@@ -169,67 +169,7 @@ class UNet(nn.Module):
         x = self.final_conv(x)
         return x
 
-"""class UNet(nn.Module):
-    def __init__(self, num_classes):
-        super(UNet, self).__init__()
-        self.encoder = resnet34(weights=ResNet34_Weights.DEFAULT)  # Pre-trained encoder (ResNet34)
 
-        # Modify first conv layer to handle 12-band input
-        self.encoder.conv1 = nn.Conv2d(12, 64, kernel_size=7, stride=2, padding=3, bias=False)
-
-        # Define upsampling layers (decoder)
-        self.upconv1 = nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2)  # Upsample from 8x8 to 16x16
-        self.upconv2 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)  # Upsample from 16x16 to 32x32
-        self.upconv3 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)   # Upsample from 32x32 to 64x64
-        self.upconv4 = nn.ConvTranspose2d(64, 64, kernel_size=2, stride=2)    # Upsample from 64x64 to 128x128
-
-        # Adjust channels for skip connections using 1x1 convolutions
-        self.conv1x1_1 = nn.Conv2d(256, 256, kernel_size=1)  # To match upconv1
-        self.conv1x1_2 = nn.Conv2d(128, 128, kernel_size=1)  # To match upconv2
-        self.conv1x1_3 = nn.Conv2d(64, 64, kernel_size=1)   # To match upconv3
-
-        # Final output layer
-        self.final_conv = nn.Conv2d(64, num_classes, kernel_size=1)
-
-    def forward(self, x):
-        # Encoder (ResNet34)
-        print(f"Xinput shape= {x.shape}")
-        x1 = self.encoder.relu(self.encoder.bn1(self.encoder.conv1(x)))
-        print(f"X1 after encoder shape= {x1.shape}")
-        x1 = self.encoder.maxpool(x1)  # 64x64
-        print(f"X1 after maxpool shape= {x1.shape}")
-        x2 = self.encoder.layer1(x1)   # 64x64
-        print(f"X2 encoder shape= {x2.shape}")
-        x3 = self.encoder.layer2(x2)   # 32x32
-        print(f"X3 encoder shape= {x3.shape}")
-        x4 = self.encoder.layer3(x3)   # 16x16
-        print(f"X4 encoder shape= {x4.shape}")
-        x5 = self.encoder.layer4(x4)   # 8x8
-        print(f"X5 encoder shape= {x5.shape}")
-        # Decoder (upsampling)
-        x = self.upconv1(x5)           # 8x8 -> 16x16
-        print(f"x upconv 1 dec= {x.shape}")
-        x = x + self.conv1x1_1(x4)     # Skip connection from encoder (x4)
-        print(f"x conv 1 layer dec= {x.shape}")
-        x = self.upconv2(x)            # 16x16 -> 32x32
-        print(f"x upconv2 dec= {x.shape}")
-        x = x + self.conv1x1_2(x3)     # Skip connection from encoder (x3)
-
-        print(f"x Conv 2 layer dec= {x.shape}")
-        x = self.upconv3(x)            # 32x32 -> 64x64
-        print(f"x upConv 3 dec= {x.shape}")
-
-        x = x + self.conv1x1_3(x2)     # Skip connection from encoder (x2)
-
-        print(f"x Conv 3 layer dec= {x.shape}")
-        x = self.upconv4(x)            # 64x64 -> 128x128
-
-
-        # Final output layer
-        x = self.final_conv(x)         # Output size: [batch_size, num_classes, 128, 128]
-
-        return x
-        """
 # Instantiate model
 model = UNet(num_classes=2)
 
